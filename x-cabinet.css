@@ -1,0 +1,95 @@
+/*
+ * @license
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+
+:host {
+	position: relative;
+
+	overflow: hidden;
+    display: block;
+
+    transition: all 300ms ease;
+  	transition-property: transform box-shadow margin;
+}
+
+:host([ghost]) {
+	pointer-events: none;
+};
+
+/**/
+:host([orientation='up']){
+	border-bottom: 2px solid rgba(30,30,30,0.7);
+}
+:host([orientation='up']) content::content x-cabinet-drawer {
+	transform: translate(0,100%);
+	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
+}
+:host([orientation='up']) content::content x-cabinet-drawer[active]:after {
+  width: 100%;
+  height: 10px;
+  top: -10px;
+  left:0;
+}
+
+/**/
+:host([orientation='down']){
+	border-top: 2px solid rgba(30,30,30,0.7);
+}
+:host([orientation='down']) content::content x-cabinet-drawer {
+	transform: translate(0,-100%);
+	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
+}
+:host([orientation='down']) content::content x-cabinet-drawer[active]:after {
+  width: 100%;
+  height: 10px;
+  bottom: -10px;
+  left:0;
+}
+
+/**/
+:host([orientation='left']){
+	border-right: 2px solid rgba(30,30,30,0.7);
+}
+:host([orientation='left']) content::content x-cabinet-drawer {
+	transform: translate(100%,0);
+	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
+}
+:host([orientation='left']) content::content x-cabinet-drawer[active]:after {
+  width: 10px;
+  height: 100%;
+  left: -10px;
+  top: 0;
+}
+
+/* right drawer */
+:host([orientation='right']){
+	border-left: 2px solid rgba(30,30,30,0.7);
+}
+:host([orientation='right']) content::content x-cabinet-drawer {
+	transform: translate(-100%,0);
+	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
+}
+:host([orientation='right']) content::content x-cabinet-drawer[active]:after {
+  width: 10px;
+  height: 100%;
+  right: -10px;
+  top: 0;
+}
+
+/* Hide show active drawer */
+polyfill-next-selector { content: ':host x-cabinet-drawer' }
+:host([orientation]) content::content x-cabinet-drawer[active] {
+	opacity: 1;
+}
+
+/* Opened drawer state */
+:host([isopen][orientation]) content::content x-cabinet-drawer[active] {
+	transform: translate(0,0);
+	/*box-shadow: inset 0 0px 80px -20px rgba(30,30,30,0.7);*/
+}

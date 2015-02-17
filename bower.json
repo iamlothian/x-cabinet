@@ -1,0 +1,28 @@
+{
+  "name": "x-cabinet",
+  "version": "0.0.0",
+  "authors": [
+    "Anonymous <lothian.studios@gmail.com>"
+  ],
+  "description": "Element providing solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "x-cabinet",
+    "drawer"
+  ],
+  "main": "x-cabinet.html",
+  "license": "MIT",
+  "homepage": "https://github.com/iamlothian/x-cabinet/",
+  "ignore": [
+    "/.*",
+    "/tests/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.2"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^2.0.5"
+  }
+}

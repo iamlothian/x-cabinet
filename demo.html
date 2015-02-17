@@ -1,0 +1,180 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>x-cabinet Demo</title>
+
+  <script src="../webcomponentsjs/webcomponents.min.js"></script>
+  <link rel="import" href="x-cabinet.html">
+
+  <style type="text/css">
+
+    x-cabinet.fix-to-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width:  90%;
+      height: 200px;
+      margin: 0 5%;
+    }
+
+    x-cabinet.fix-to-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width:  90%;
+      height: 200px;
+      margin: 0 5%;
+    }
+
+    x-cabinet.block {
+      width: 49.0%;
+      height:30px;
+      float: left;
+    }
+
+    x-cabinet.inline {
+      width: 100%;
+      height: 500px;
+    }
+
+    x-cabinet-drawer {
+      background: #efefef;
+      border: 1px solid #666;
+    }
+
+    .spaceing {
+      padding: 15px 0;
+    }
+
+    .container:after {
+      content:"";
+      display:table;
+      clear:both;
+    }
+
+  </style>
+
+</head>
+<body unresolved>
+
+  <x-cabinet class="fix-to-top" selected="0" orientation="down" touch-action="none" ghost>
+
+    <x-cabinet-drawer>
+      darw 1
+    </x-cabinet-drawer>
+    <x-cabinet-drawer>
+      darw 2
+    </x-cabinet-drawer>
+    <x-cabinet-drawer>
+      darw 3
+    </x-cabinet-drawer>
+
+  </x-cabinet>
+
+  <br><br>
+  <p>An example of using <code>&lt;x-cabinet&gt;</code>:</p>
+
+  <div>
+    <p>The content here is not obsured by the x-cabnet element due to the <code>ghost</code> attribute.</p>
+  </div>
+
+  <button>I don nothing but you can click me!</button>
+
+  <br><br><br><br><br><br>
+
+  <input type="number" min="0" max="2" id="mutlidrawerSelect" value="0" />
+  <button onclick="selectdrawer()">Goto drawer</button> 
+
+  <div>
+    <p>
+      These two cabinets are blocking and preserve thier layout open or closed, 
+      as they are not <code>ghost</code> clicking anywhere in the potential space
+      will trigger the open event
+    </p>
+  </div>
+
+  <div class="spaceing">
+
+    <div class="container">
+      <x-cabinet class="block" orientation="right">
+
+        <x-cabinet-drawer>
+          right opening cabinet
+        </x-cabinet-drawer>
+
+      </x-cabinet>
+      <x-cabinet class="block" orientation="left" touch-action="none">
+
+        <x-cabinet-drawer>
+          left opening cabinet
+        </x-cabinet-drawer>
+
+      </x-cabinet>
+    </div>
+
+  </div>
+
+  <div>
+    <p>This cabinet is <code>inline</code> and <code>ghost</code> and will concede its shape when closed allowing other elements to flow around it like a float</p>
+  </div>
+
+  <div class="spaceing">
+    <x-cabinet class="inline" inline orientation="down" ghost>
+
+      <x-cabinet-drawer>
+        inline pushing cabinet
+      </x-cabinet-drawer>
+
+    </x-cabinet>
+  </div>
+
+  <div class="spaceing">
+
+    <div class="container">
+      <x-cabinet class="block" orientation="right" inline>
+
+        <x-cabinet-drawer>
+          right opening cabinet
+        </x-cabinet-drawer>
+
+      </x-cabinet>
+      <p> some text </p>
+    </div>
+
+  </div>
+
+  <div>
+    <p>blah blah</p>
+  </div>
+
+  <x-cabinet class="fix-to-bottom" selected="0" orientation="up" touch-action="none" ghost>
+
+    <x-cabinet-drawer>
+      darw open up wards
+    </x-cabinet-drawer>
+
+  </x-cabinet>
+
+  <script type="text/javascript">
+
+    var multidrawerCabnet = document.querySelector('x-cabinet.fix-to-top'),
+        multiDarwCabnetInput = document.querySelector('#mutlidrawerSelect');
+
+    function selectdrawer () {
+      multidrawerCabnet.selected = multiDarwCabnetInput.value;
+    }
+
+  </script>
+
+</body>
+</html>

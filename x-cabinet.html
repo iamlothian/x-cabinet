@@ -1,0 +1,376 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../x-gesture-handle/x-gesture-handle.html">
+<link rel="import" href="x-cabinet-drawer.html">
+
+<!--
+An element virtualizing a cabinet and drawer system.
+
+##### Example
+
+    <x-cabinet class="fix-to-top" selected="0" orientation="down" touch-action="none" ghost>
+
+      <x-cabinet-drawer>
+        darw 1
+      </x-cabinet-drawer>
+      <x-cabinet-drawer>
+        darw 2
+      </x-cabinet-drawer>
+      <x-cabinet-drawer>
+        darw 3
+      </x-cabinet-drawer>
+
+    </x-cabinet>
+
+@element x-cabinet
+@blurb blah
+@status alpha
+@homepage http://polymerlabs.github.io/x-cabinet
+-->
+<polymer-element name="x-cabinet" extends="x-gesture-handle">
+
+  <template>
+
+    <link rel="stylesheet" href="x-cabinet.css">
+
+    <content></content>
+
+  </template>
+
+  <script>
+
+    (function(/*INJECT common functions*/){
+
+      // TODO: considder moving this out and injecting this as i use this in most elements with animation 
+      var transitionEndEventName = transitionEndEventName || function () {
+        var i,
+          undefined,
+          el = document.createElement('div'),
+          transitions = {
+            'transition':'transitionend',
+            'OTransition':'otransitionend',  // oTransitionEnd in very old Opera
+            'MozTransition':'transitionend',
+            'WebkitTransition':'webkitTransitionEnd'
+          };
+
+        for (i in transitions) {
+          if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+            return transitions[i];
+          }
+        }
+
+        // TODO: throw 'TransitionEnd event is not supported in this browser'; 
+      }
+
+      var inlineProp = function(orient){
+        switch(orient){
+          case 'up': return 'marginTop';
+          case 'down': return 'marginBottom';
+          case 'left': return 'marginLeft';
+          case 'right': return 'marginRight';
+        };
+      };
+
+      var inlineValue = function(element, orient){
+        switch(orient){
+          case 'up': 
+          case 'down': return element.offsetHeight;
+          case 'left': 
+          case 'right': return element.offsetWidth;
+        };
+      }
+
+      Polymer({
+
+        publish: {
+          /**
+           * The `orientation` attribute controlls the direction in 
+           * which drawers will open from the cabinet.
+           *
+           * acceptied values are 'up'|'down'|'left'|'right'
+           *
+           * @attribute orientation
+           * @type string
+           * @default 'up'
+           */
+          orientation:  {value:'up',      reflect: true},
+          /**
+           * The `isOpen` attribute determins if a drawer is open,
+           * a drawer can be active but unless the cabinet is opne
+           * it will notbe visible
+           *
+           * @attribute isOpen
+           * @type boolean
+           * @default false
+           */
+          isOpen:       {value:false,     reflect: true},
+          /**
+           * The `selected` attribute controls which drawer will be
+           * opened when there are multiple drawers in a cabinet
+           *
+           * @attribute selected
+           * @type number
+           * @default 0
+           */
+          selected:     {value:0,         reflect: true},
+          /**
+           * The `openOnChange` attribute controls weather change the selected
+           * attribute will automaticly open the selected drawer
+           *
+           * @attribute openOnChange
+           * @type boolean
+           * @default true
+           */
+          openOnChange: {value:true,      reflect: true},
+          /**
+           * The `inline` attribute changes the layout behaviour of the 
+           * cabinet to push and pull sourounding content rather than 
+           * blocking out all potential space
+           *
+           * @attribute inline
+           * @type boolean
+           * @default false
+           */
+          inline:       {value:false,      reflect: true},
+          /**
+           * The `ghost` attribute allows mouse and touch events
+           * to pass through the x-cabinet element to elements below.
+           *
+           * This allows the potential space or an open cabinet drawer 
+           * to not block interaction when closed
+           *
+           * @attribute ghost
+           * @type boolean
+           * @default false
+           */
+           ghost:       false
+        },
+
+        /****
+          GESTURE HANDLERS
+          ----------------
+          run these here before the ready callback
+        ****/
+        'on-tap': function(e) {
+          this.isOpen = !this.isOpen;
+        },
+
+        'on-trackstart': function(e) {
+          this._drag = {
+            s: { x: e.pageX, y: e.pageY },
+            d: { x: undefined, y: undefined },
+            e: { x: undefined, y: undefined },
+            depth: inlineValue(this, this.orientation),
+          };
+          this.drawers[this.selected].style.transition = 'none';
+        },
+
+        'on-track': function(e) {
+          // don't drag inline cabinets
+          if (this.inline) return; 
+
+          this._drag.d = { 
+            x: e.pageX - this._drag.s.x, 
+            y: e.pageY - this._drag.s.y 
+          };
+
+          // track drag as percentage of elements depth
+          var translateValue, d, dl;
+          switch(this.orientation){
+            case 'up': 
+              d = this._drag.d.y / this._drag.depth * 100;
+              dl = Math.max(0, Math.min(100, this.isOpen ? d : d+100));
+              translateValue = 'translate(0,'+ dl +'%)';
+              break;
+            case 'down': 
+              d = this._drag.d.y / this._drag.depth * 100;
+              dl = Math.max(-100, Math.min(0, this.isOpen ? d : d-100));
+              translateValue = 'translate(0,'+ dl +'%)';
+              break;
+            case 'left': 
+              d = this._drag.d.x / this._drag.depth * 100;
+              dl = Math.max(0, Math.min(100, this.isOpen ? d : d+100));
+              translateValue = 'translate('+ dl +'%,0)';
+              break;
+            case 'right': 
+              d = this._drag.d.x / this._drag.depth * 100,
+              dl = Math.max(-100, Math.min(0, this.isOpen ? d : d-100));
+              translateValue = 'translate('+ dl +'%, 0)';
+              break;
+          }
+
+          // remember percentage
+          this._drag.dl = dl;
+
+          this.drawers[this.selected].style.transform = translateValue;
+        },
+
+        'on-trackend': function(e) {
+            this._drag.e = { x: e.pageX, y: e.pageY };
+
+            // open if we have dragged more than 20%
+            var trigger;
+            switch(this.orientation){               
+              case 'down': case 'left': trigger = this._drag.dl > -80; break;
+              case 'up': case 'right': trigger = this._drag.dl < 80; break;
+            }
+
+            if (trigger){
+              this.isOpen = !this.isOpen;
+            }
+
+            // clean up
+            delete this._drag;
+
+            this.drawers[this.selected].style.transform = '';
+            this.drawers[this.selected].style.transition = '';
+
+            // prevent tap event
+            e.preventTap();
+        },
+
+        /*
+          LIFE CYCLE EVENTS
+        */
+        // set up cabinet
+        ready: function(){
+
+          // extended element setup
+          this.super();
+
+          this._completeEventName = transitionEndEventName();
+
+          if (this.inline){
+            this.style[inlineProp(this.orientation)] = - inlineValue(this, this.orientation) + 'px';
+          }
+
+        },
+
+        // set up drawers
+        domReady: function(){
+
+          var _self = this;
+          this._handleTransitionEnd = function(e){ 
+            _self.handleTransitionEnd.call(_self, e) 
+          };
+          this._handlePolymerGestures = function(e) {
+            _self.handlePolymerGesture.call(_self, e);
+          };
+
+          this.drawers = this.querySelectorAll('x-cabinet-drawer');
+
+          // listen for transitions on drawers
+          for (var i=0; i < this.drawers.length; i++){
+              var drawer = this.drawers[i];
+              drawer.addEventListener(this._completeEventName,  this._handleTransitionEnd, false);
+          }
+
+          // select first drawer
+          this.drawers[this.selected].active = true;
+
+          // add event listeners for PolymerGestures
+          // polymerGestures.forEach(function(en) {
+          //   PolymerGestures.addEventListener(_self, en, _self._handlePolymerGestures);
+          // });
+
+        },
+
+        // clean up
+        destroy: function(){
+
+          for (var i=0; i < this.drawers.length; i++){
+              var drawer = this.drawers[i];
+              drawer.removeEventListener(this._completeEventName, this._handleTransitionEnd, false);
+          }
+
+        },
+
+        /*
+          CHANGE HANDLERS
+        */
+        orientationChanged: function(oldVal, newVal){
+
+        },
+
+        isOpenChanged: function(oldVal, newVal){
+          //console.log('isOpenChanged', oldVal, newVal);
+
+          if (this.inline){
+            this.style[inlineProp(this.orientation)] = newVal ? 
+              0 : - inlineValue(this, this.orientation) + 'px';
+          }
+
+        },
+
+        selectedChanged: function(oldVal, newVal){
+
+          if (!this.drawers || oldVal === undefined) return;
+
+          // remember if we were looking at an open drawer
+          var wasOpen = this.isOpen;
+
+          // close current drawer
+          this.closedrawer(this.drawers[oldVal]);
+
+          // if drawer was open wait for close befor opening next drawer
+          if (wasOpen){
+            this.__selectedChanged_onClose__ = function(){
+              // open new drawer
+              this.opendrawer(this.drawers[newVal], true);
+            };
+          } 
+          // just set active drawer and open it
+          else {
+            this.opendrawer(this.drawers[newVal], this.openOnChange);
+          }
+
+        },
+
+        handleTransitionEnd: function(e){
+          if (e.propertyName === "transform"){
+            var eventName = this.isOpen ? 'x-cabinet-drawer-opened' : 'x-cabinet-drawer-closed';
+            this.asyncFire(eventName, { drawer: this.drawers[this.selected] }, this.drawers[this.selected]);
+            this.asyncFire('x-cabinet-drawer-ready', { drawer: this.drawers[this.selected] }, this.drawers[this.selected]);
+
+            if (!this.isOpen && !!this.__selectedChanged_onClose__){
+              this.__selectedChanged_onClose__();
+              delete this.__selectedChanged_onClose__;
+            }
+
+          }
+        },
+
+        /*
+          METHODS
+        */
+
+        // mostly used for internal organisation
+        // might move back into the `selectedChanged` event.
+        // as its better to control the cabinet using `isOpen` and `selected`
+        opendrawer: function(drawer, autoOpen){
+          // close current drawer
+          this.isOpen = autoOpen;
+          drawer.active = true;
+        },
+
+        closedrawer: function(drawer){
+          // open new drawer
+          this.isOpen = false;
+          drawer.active = false;
+        }       
+
+      });
+
+    })()
+
+  </script>
+
+</polymer-element>
