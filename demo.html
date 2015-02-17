@@ -106,14 +106,14 @@
   <div class="spaceing">
 
     <div class="container">
-      <x-cabinet class="block" orientation="right">
+      <x-cabinet class="block" orientation="right" clickable="false">
 
         <x-cabinet-drawer>
           right opening cabinet
         </x-cabinet-drawer>
 
       </x-cabinet>
-      <x-cabinet class="block" orientation="left" touch-action="none">
+      <x-cabinet class="block" orientation="left" dragable="false">
 
         <x-cabinet-drawer>
           left opening cabinet
@@ -125,6 +125,11 @@
   </div>
 
   <div>
+    <p>
+      You may or may not have noticed that the left cabinet only responds to dragging the handle, and the right only responds to clicking / tapping.
+      be default all cabinets are clickable, and all block cabinets are dragable. you can turn these default interaction off using the attributes `clickable` and `dragable`
+    </p>
+  
     <p>This cabinet is <code>inline</code> and <code>ghost</code> and will concede its shape when closed allowing other elements to flow around it like a float</p>
   </div>
 
