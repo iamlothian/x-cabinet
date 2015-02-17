@@ -141,6 +141,24 @@ An element virtualizing a cabinet and drawer system.
            */
           inline:       {value:false,      reflect: true},
           /**
+           * The `clickable` attribute affects whether
+           * clicking the element will toggle the isopen state
+           *
+           * @attribute clickable
+           * @type boolean
+           * @default true
+           */
+          clickable:    {value:true,      reflect: true},
+          /**
+           * The `dragable` attribute affects whether
+           * dragging the elements drawers is enabled
+           *
+           * @attribute dragable
+           * @type boolean
+           * @default true
+           */
+          dragable:     {value:true,      reflect: true},
+          /**
            * The `ghost` attribute allows mouse and touch events
            * to pass through the x-cabinet element to elements below.
            *
@@ -160,10 +178,14 @@ An element virtualizing a cabinet and drawer system.
           run these here before the ready callback
         ****/
         'on-tap': function(e) {
+          if (!this.clickable) return;
           this.isOpen = !this.isOpen;
         },
 
         'on-trackstart': function(e) {
+          // don't drag inline cabinets
+          if (this.inline || !this.dragable) return;
+
           this._drag = {
             s: { x: e.pageX, y: e.pageY },
             d: { x: undefined, y: undefined },
@@ -175,7 +197,7 @@ An element virtualizing a cabinet and drawer system.
 
         'on-track': function(e) {
           // don't drag inline cabinets
-          if (this.inline) return; 
+          if (this.inline || !this.dragable) return; 
 
           this._drag.d = { 
             x: e.pageX - this._drag.s.x, 
@@ -214,6 +236,9 @@ An element virtualizing a cabinet and drawer system.
         },
 
         'on-trackend': function(e) {
+            // don't drag inline cabinets
+            if (this.inline || !this.dragable) return;
+
             this._drag.e = { x: e.pageX, y: e.pageY };
 
             // open if we have dragged more than 20%
