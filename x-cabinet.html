@@ -272,7 +272,6 @@ An element virtualizing a cabinet and drawer system.
           }
 
           if (this.draggable){
-            console.log(this.draggable);
             this.ondragstart = function(e){ e.preventDefault(); return false;}
             this.ondrop = function(e){ e.preventDefault(); return false;}
           }
@@ -345,7 +344,7 @@ An element virtualizing a cabinet and drawer system.
           // close current drawer
           this.closedrawer(this.drawers[oldVal]);
 
-          // if drawer was open wait for close befor opening next drawer
+          // if drawer was open wait for close before opening next drawer
           if (wasOpen){
             this.__selectedChanged_onClose__ = function(){
               // open new drawer
@@ -360,7 +359,8 @@ An element virtualizing a cabinet and drawer system.
         },
 
         handleTransitionEnd: function(e){
-          if (e.propertyName === "transform"){
+
+          if (e.propertyName === "transform" || e.propertyName === "-webkit-transform" ){
             var eventName = this.isOpen ? 'x-cabinet-drawer-opened' : 'x-cabinet-drawer-closed';
             this.asyncFire(eventName, { drawer: this.drawers[this.selected] }, this.drawers[this.selected]);
             this.asyncFire('x-cabinet-drawer-ready', { drawer: this.drawers[this.selected] }, this.drawers[this.selected]);
