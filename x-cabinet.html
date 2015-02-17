@@ -150,14 +150,14 @@ An element virtualizing a cabinet and drawer system.
            */
           clickable:    {value:true,      reflect: true},
           /**
-           * The `dragable` attribute affects whether
+           * The `draggable` attribute affects whether
            * dragging the elements drawers is enabled
            *
-           * @attribute dragable
+           * @attribute draggable
            * @type boolean
            * @default true
            */
-          draggable:     {value:true,      reflect: true},
+          draggable:     {value:false,      reflect: true},
           /**
            * The `ghost` attribute allows mouse and touch events
            * to pass through the x-cabinet element to elements below.
@@ -183,9 +183,6 @@ An element virtualizing a cabinet and drawer system.
         },
 
         'on-trackstart': function(e) {
-          // don't drag inline cabinets
-          if (this.inline || !this.draggable) return;
-
           this._drag = {
             s: { x: e.pageX, y: e.pageY },
             d: { x: undefined, y: undefined },
@@ -236,9 +233,6 @@ An element virtualizing a cabinet and drawer system.
         },
 
         'on-trackend': function(e) {
-            // don't drag inline cabinets
-            if (this.inline || !this.draggable) return;
-
             this._drag.e = { x: e.pageX, y: e.pageY };
 
             // open if we have dragged more than 20%
