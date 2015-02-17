@@ -26,11 +26,13 @@
 :host([orientation='up']){
 	border-bottom: 2px solid rgba(30,30,30,0.7);
 }
-:host([orientation='up']) content::content x-cabinet-drawer {
+
+:host([orientation='up']) ::content x-cabinet-drawer {
 	transform: translate(0,100%);
+  -webkit-transform: translate(0,100%);
 	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
 }
-:host([orientation='up']) content::content x-cabinet-drawer[active]:after {
+:host([orientation='up']) ::content x-cabinet-drawer[active]:after {
   width: 100%;
   height: 10px;
   top: -10px;
@@ -41,11 +43,12 @@
 :host([orientation='down']){
 	border-top: 2px solid rgba(30,30,30,0.7);
 }
-:host([orientation='down']) content::content x-cabinet-drawer {
+:host([orientation='down']) ::content x-cabinet-drawer {
 	transform: translate(0,-100%);
+  -webkit-transform: translate(0,-100%);
 	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
 }
-:host([orientation='down']) content::content x-cabinet-drawer[active]:after {
+:host([orientation='down']) ::content x-cabinet-drawer[active]:after {
   width: 100%;
   height: 10px;
   bottom: -10px;
@@ -56,11 +59,12 @@
 :host([orientation='left']){
 	border-right: 2px solid rgba(30,30,30,0.7);
 }
-:host([orientation='left']) content::content x-cabinet-drawer {
+:host([orientation='left']) ::content x-cabinet-drawer {
 	transform: translate(100%,0);
+  -webkit-transform: translate(100%,0);
 	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
 }
-:host([orientation='left']) content::content x-cabinet-drawer[active]:after {
+:host([orientation='left']) ::content x-cabinet-drawer[active]:after {
   width: 10px;
   height: 100%;
   left: -10px;
@@ -71,11 +75,12 @@
 :host([orientation='right']){
 	border-left: 2px solid rgba(30,30,30,0.7);
 }
-:host([orientation='right']) content::content x-cabinet-drawer {
+:host([orientation='right']) ::content x-cabinet-drawer {
 	transform: translate(-100%,0);
+  -webkit-transform: translate(-100%,0);
 	/*box-shadow: inset 0 0 999px 0 rgba(30,30,30,0.7);*/
 }
-:host([orientation='right']) content::content x-cabinet-drawer[active]:after {
+:host([orientation='right']) ::content x-cabinet-drawer[active]:after {
   width: 10px;
   height: 100%;
   right: -10px;
@@ -84,12 +89,13 @@
 
 /* Hide show active drawer */
 polyfill-next-selector { content: ':host x-cabinet-drawer' }
-:host([orientation]) content::content x-cabinet-drawer[active] {
+:host([orientation]) ::content x-cabinet-drawer[active] {
 	opacity: 1;
 }
 
 /* Opened drawer state */
-:host([isopen][orientation]) content::content x-cabinet-drawer[active] {
+:host([isopen][orientation]) ::content x-cabinet-drawer[active] {
 	transform: translate(0,0);
+  -webkit-transform: translate(0,0);
 	/*box-shadow: inset 0 0px 80px -20px rgba(30,30,30,0.7);*/
 }

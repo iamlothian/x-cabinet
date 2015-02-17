@@ -271,6 +271,12 @@ An element virtualizing a cabinet and drawer system.
             this.style[inlineProp(this.orientation)] = - inlineValue(this, this.orientation) + 'px';
           }
 
+          if (this.draggable){
+            console.log(this.draggable);
+            this.ondragstart = function(e){ e.preventDefault(); return false;}
+            this.ondrop = function(e){ e.preventDefault(); return false;}
+          }
+
         },
 
         // set up drawers
