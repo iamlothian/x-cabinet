@@ -70,6 +70,17 @@ An element virtualizing a cabinet and drawer system.
         // TODO: throw 'TransitionEnd event is not supported in this browser'; 
       }
 
+      var drawerSateStyles = function(element, orient, isopen, openLimit, closeLimit){
+        var transformStyle = '', value = (isopen ? openLimit : closeLimit);
+        switch(orient){
+          case 'up': transformStyle = 'translate(0,'+ value +'%)'; break;
+          case 'down': transformStyle ='translate(0,-'+ value +'%)'; break;
+          case 'left': transformStyle ='translate('+ value +'%, 0)'; break;
+          case 'right': transformStyle ='translate(-'+ value +'%, 0)'; break;
+        };
+        element.style.transform = transformStyle;
+      };
+
       var inlineProp = function(orient){
         switch(orient){
           case 'up': return 'marginTop';
@@ -79,12 +90,19 @@ An element virtualizing a cabinet and drawer system.
         };
       };
 
-      var inlineValue = function(element, orient){
+      var inlineValue = function(element, orient, isopen, openLimit, closeLimit){
         switch(orient){
           case 'up': 
-          case 'down': return element.offsetHeight;
+          case 'down': 
+            return !openLimit ?
+              element.offsetHeight / (100 / (isopen ? 100 : closeLimit)) :
+              element.offsetHeight / (100 / (isopen ? openLimit : closeLimit));
+            
           case 'left': 
-          case 'right': return element.offsetWidth;
+          case 'right': 
+            return !openLimit ?
+              element.offsetWidth / (100 / (isopen ? 100 : closeLimit)) :
+              element.offsetWidth / (100 / (isopen ? openLimit : closeLimit));
         };
       }
 
@@ -157,7 +175,25 @@ An element virtualizing a cabinet and drawer system.
            * @type boolean
            * @default true
            */
-          draggable:     {value:false,      reflect: true},
+          draggable:     {value:false,     reflect: true},
+          /**
+           * The `openLimit` when cabinet is open at what % limit 
+           * does the drawer refuse to open past. [0-100]% open
+           *
+           * @attribute openLimit
+           * @type percentage
+           * @default 100
+           */
+          openLimit:     {value:100,       reflect: false},
+          /**
+           * The `closeLimit` when cabinet is closed, at what % limit 
+           * does the drawer refuse to close past. [0-100]% open
+           *
+           * @attribute closeLimit
+           * @type percentage
+           * @default 0
+           */
+          closeLimit:    {value:0,         reflect: false},
           /**
            * The `ghost` attribute allows mouse and touch events
            * to pass through the x-cabinet element to elements below.
@@ -169,7 +205,16 @@ An element virtualizing a cabinet and drawer system.
            * @type boolean
            * @default false
            */
-           ghost:       false
+           ghost:       false,
+           /**
+           * The `handle` adds a handle to the drawers that accepts
+           * mouse and touch events and extends just past the end of the drawer
+           *
+           * @attribute handle
+           * @type boolean
+           * @default false
+           */
+           handle:      false
         },
 
         /****
@@ -187,7 +232,13 @@ An element virtualizing a cabinet and drawer system.
             s: { x: e.pageX, y: e.pageY },
             d: { x: undefined, y: undefined },
             e: { x: undefined, y: undefined },
-            depth: inlineValue(this, this.orientation),
+            depth: inlineValue(
+              this, 
+              this.orientation, 
+              this.isOpen, 
+              this.openLimit, 
+              this.closeLimit
+            ),
           };
           this.drawers[this.selected].style.transition = 'none';
         },
@@ -204,23 +255,27 @@ An element virtualizing a cabinet and drawer system.
           // track drag as percentage of elements depth
           var translateValue, d, dl;
           switch(this.orientation){
+
             case 'up': 
-              d = this._drag.d.y / this._drag.depth * 100;
+              d = (this._drag.d.y / this._drag.depth * (100-this.openLimit)) + (this.isOpen ? this.openLimit : this.closeLimit-100);
               dl = Math.max(0, Math.min(100, this.isOpen ? d : d+100));
               translateValue = 'translate(0,'+ dl +'%)';
               break;
+
             case 'down': 
-              d = this._drag.d.y / this._drag.depth * 100;
+              d = (this._drag.d.y / this._drag.depth * (100-this.openLimit)) + (this.isOpen ? -this.openLimit : 100-this.closeLimit);
               dl = Math.max(-100, Math.min(0, this.isOpen ? d : d-100));
               translateValue = 'translate(0,'+ dl +'%)';
               break;
+
             case 'left': 
-              d = this._drag.d.x / this._drag.depth * 100;
+              d = (this._drag.d.x / this._drag.depth * (100-this.openLimit)) + (this.isOpen ? this.openLimit : this.closeLimit-100);
               dl = Math.max(0, Math.min(100, this.isOpen ? d : d+100));
               translateValue = 'translate('+ dl +'%,0)';
               break;
+
             case 'right': 
-              d = this._drag.d.x / this._drag.depth * 100,
+              d = (this._drag.d.x / this._drag.depth * (100-this.openLimit)) + (this.isOpen ? -this.openLimit : 100-this.closeLimit);
               dl = Math.max(-100, Math.min(0, this.isOpen ? d : d-100));
               translateValue = 'translate('+ dl +'%, 0)';
               break;
@@ -265,10 +320,20 @@ An element virtualizing a cabinet and drawer system.
           // extended element setup
           this.super();
 
+          // invers persentages
+          this.openLimit = 100 - this.openLimit;
+          this.closeLimit = 100 - this.closeLimit;
+
           this._completeEventName = transitionEndEventName();
 
           if (this.inline){
-            this.style[inlineProp(this.orientation)] = - inlineValue(this, this.orientation) + 'px';
+            this.style[inlineProp(this.orientation)] = - inlineValue(
+              this, 
+              this.orientation, 
+              this.isOpen, 
+              this.openLimit, 
+              this.closeLimit
+            ) + 'px';
           }
 
           if (this.draggable){
@@ -300,10 +365,13 @@ An element virtualizing a cabinet and drawer system.
           // select first drawer
           this.drawers[this.selected].active = true;
 
-          // add event listeners for PolymerGestures
-          // polymerGestures.forEach(function(en) {
-          //   PolymerGestures.addEventListener(_self, en, _self._handlePolymerGestures);
-          // });
+          drawerSateStyles(
+            this.drawers[this.selected], 
+            this.orientation, 
+            this.isOpen, 
+            this.openLimit, 
+            this.closeLimit
+          );
 
         },
 
@@ -327,9 +395,25 @@ An element virtualizing a cabinet and drawer system.
         isOpenChanged: function(oldVal, newVal){
           //console.log('isOpenChanged', oldVal, newVal);
 
+          drawerSateStyles(
+            this.drawers[this.selected], 
+            this.orientation, 
+            newVal, 
+            this.openLimit, 
+            this.closeLimit
+          );
+
           if (this.inline){
-            this.style[inlineProp(this.orientation)] = newVal ? 
-              0 : - inlineValue(this, this.orientation) + 'px';
+
+            var depth = inlineValue(
+                this, 
+                this.orientation, 
+                this.isOpen, 
+                this.openLimit, 
+                this.closeLimit
+            )
+
+            this.style[inlineProp(this.orientation)] = newVal ? 0 : - depth + 'px';
           }
 
         },

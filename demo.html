@@ -67,7 +67,7 @@
 </head>
 <body unresolved>
 
-  <x-cabinet class="fix-to-top" selected="0" orientation="down" draggable="true" ghost>
+  <x-cabinet class="fix-to-top" selected="0" orientation="down" draggable="true" handle ghost>
 
     <x-cabinet-drawer>
       darw 1
@@ -106,7 +106,7 @@
   <div class="spaceing">
 
     <div class="container">
-      <x-cabinet class="block" orientation="right" clickable="false" draggable="true">
+      <x-cabinet class="block" orientation="right" clickable="false" openLimit="50" draggable>
 
         <x-cabinet-drawer>
           right opening cabinet
@@ -134,7 +134,7 @@
   </div>
 
   <div class="spaceing">
-    <x-cabinet class="inline" inline orientation="down" ghost>
+    <x-cabinet class="inline" inline handle orientation="down" ghost>
 
       <x-cabinet-drawer>
         inline pushing cabinet
@@ -146,7 +146,7 @@
   <div class="spaceing">
 
     <div class="container">
-      <x-cabinet class="block" orientation="right" inline>
+      <x-cabinet class="block" orientation="right" handle inline>
 
         <x-cabinet-drawer>
           right opening cabinet
@@ -162,7 +162,7 @@
     <p>blah blah</p>
   </div>
 
-  <x-cabinet class="fix-to-bottom" selected="0" orientation="up" touch-action="none" ghost>
+  <x-cabinet class="fix-to-bottom" selected="0" orientation="up" closeLimit="20" draggable ghost>
 
     <x-cabinet-drawer>
       darw open up wards
