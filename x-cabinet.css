@@ -32,6 +32,16 @@
   text-align: center;
   line-height: 10px;
   color: #eee;
+  cursor: pointer;
+}
+
+:host([noselect]) {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /**/
@@ -102,7 +112,7 @@ polyfill-next-selector { content: ':host x-cabinet-drawer' }
 }
 
 /* Opened drawer state */
-/*:host([isopen][orientation]) ::content x-cabinet-drawer[active] {
+:host([isopen][orientation]) ::content x-cabinet-drawer[active] {
 	transform: translate(0,0);
   -webkit-transform: translate(0,0);
-}*/
+}

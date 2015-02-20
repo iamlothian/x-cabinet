@@ -70,6 +70,21 @@ An element virtualizing a cabinet and drawer system.
         // TODO: throw 'TransitionEnd event is not supported in this browser'; 
       }
 
+      var transformPropertyName = transformPropertyName || function () {
+        var i,
+          undefined,
+          el = document.createElement('div'),
+          keys = ['transform','webkitTransform'];
+
+        for (i=0;i<keys.length;i++) {
+          if (el.style[keys[i]] !== undefined) {
+            return keys[i];
+          }
+        }
+
+        // TODO: throw 'TransitionEnd event is not supported in this browser'; 
+      }
+
       var drawerSateStyles = function(element, orient, isopen, openLimit, closeLimit){
         var transformStyle = '', value = (isopen ? openLimit : closeLimit);
         switch(orient){
@@ -78,7 +93,8 @@ An element virtualizing a cabinet and drawer system.
           case 'left': transformStyle ='translate('+ value +'%, 0)'; break;
           case 'right': transformStyle ='translate(-'+ value +'%, 0)'; break;
         };
-        element.style.transform = transformStyle;
+
+        element.style[transformPropertyName()] = transformStyle;
       };
 
       var inlineProp = function(orient){
@@ -284,7 +300,7 @@ An element virtualizing a cabinet and drawer system.
           // remember percentage
           this._drag.dl = dl;
 
-          this.drawers[this.selected].style.transform = translateValue;
+          this.drawers[this.selected].style[this._transformPropertyName] = translateValue;
         },
 
         'on-trackend': function(e) {
@@ -303,8 +319,7 @@ An element virtualizing a cabinet and drawer system.
 
             // clean up
             delete this._drag;
-
-            this.drawers[this.selected].style.transform = '';
+            
             this.drawers[this.selected].style.transition = '';
 
             // prevent tap event
@@ -325,6 +340,7 @@ An element virtualizing a cabinet and drawer system.
           this.closeLimit = 100 - this.closeLimit;
 
           this._completeEventName = transitionEndEventName();
+          this._transformPropertyName = transformPropertyName();
 
           if (this.inline){
             this.style[inlineProp(this.orientation)] = - inlineValue(
@@ -474,6 +490,14 @@ An element virtualizing a cabinet and drawer system.
           // open new drawer
           this.isOpen = false;
           drawer.active = false;
+
+          drawerSateStyles(
+            drawer, 
+            this.orientation, 
+            this.isOpen, 
+            this.openLimit, 
+            this.closeLimit
+          );
         }       
 
       });
