@@ -1,0 +1,7 @@
+{
+  "name": "x-cabinet#gh-pages",
+  "private": true,
+  "dependencies": {
+    "x-cabinet": "iamlothian/x-cabinet#master"
+  }
+}

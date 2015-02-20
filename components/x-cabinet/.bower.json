@@ -1,0 +1,38 @@
+{
+  "name": "x-cabinet",
+  "authors": [
+    "Anonymous <lothian.studios@gmail.com>"
+  ],
+  "description": "Element providing solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "x-cabinet",
+    "drawer"
+  ],
+  "main": "x-cabinet.html",
+  "license": "MIT",
+  "homepage": "https://github.com/iamlothian/x-cabinet/",
+  "ignore": [
+    "/.*",
+    "/tests/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.2",
+    "x-gesture-handle": "https://github.com/iamlothian/x-gesture-handle.git"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^2.0.5"
+  },
+  "_release": "09c4af70e8",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "09c4af70e873840f584d7448aea7e0abacc1e3d7"
+  },
+  "_source": "git://github.com/iamlothian/x-cabinet.git",
+  "_target": "master",
+  "_originalSource": "iamlothian/x-cabinet",
+  "_direct": true
+}
